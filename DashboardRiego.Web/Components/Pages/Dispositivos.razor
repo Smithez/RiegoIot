@@ -1,0 +1,140 @@
+@page "/dispositivos"
+@using DashboardRiego.Web.Models
+@using DashboardRiego.Web.Services
+@using Microsoft.AspNetCore.Components.Web
+@inject SupabaseService SupabaseService
+
+<PageTitle>Dispositivos - Sistema de Riego IoT</PageTitle>
+
+<h1>Dispositivos IoT</h1>
+
+@if (dispositivos == null)
+{
+    <p>Cargando...</p>
+}
+else if (!dispositivos.Any())
+{
+    <p>No hay dispositivos registrados.</p>
+}
+else
+{
+    <div class="table-responsive">
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Nombre</th>
+                    <th>Tipo</th>
+                    <th>Estado</th>
+                    <th>Batería</th>
+                    <th>Señal</th>
+                    <th>Ubicación</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var dispositivo in dispositivos)
+                {
+                    <tr>
+                        <td>@dispositivo.Nombre</td>
+                        <td>@dispositivo.Tipo</td>
+                        <td>
+                            <span class="badge @GetEstadoClass(dispositivo.Estado)">
+                                @dispositivo.Estado
+                            </span>
+                        </td>
+                        <td>
+                            @if (dispositivo.VoltajeBateria.HasValue)
+                            {
+                                <span class="@GetBatteriaClass(dispositivo.VoltajeBateria.Value)">
+                                    @dispositivo.VoltajeBateria.Value.ToString("N1")V
+                                </span>
+                            }
+                            else
+                            {
+                                <span>N/A</span>
+                            }
+                        </td>
+                        <td>
+                            @if (dispositivo.NivelSenal.HasValue)
+                            {
+                                <div class="signal-strength">
+                                    @for (int i = 0; i < 4; i++)
+                                    {
+                                        <div class="bar @(dispositivo.NivelSenal.HasValue && i < dispositivo.NivelSenal ? "active" : "")"></div>
+                                    }
+                                </div>
+                            }
+                            else
+                            {
+                                <span>N/A</span>
+                            }
+                        </td>
+                        <td>@dispositivo.UbicacionDescripcion</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}
+
+<style>
+    .signal-strength {
+        display: flex;
+        gap: 2px;
+        align-items: flex-end;
+        height: 20px;
+    }
+
+    .bar {
+        width: 4px;
+        background-color: #ddd;
+        margin-right: 1px;
+    }
+
+    .bar:nth-child(1) { height: 25%; }
+    .bar:nth-child(2) { height: 50%; }
+    .bar:nth-child(3) { height: 75%; }
+    .bar:nth-child(4) { height: 100%; }
+
+    .bar.active {
+        background-color: #28a745;
+    }
+
+    .battery-good { color: #28a745; }
+    .battery-warning { color: #ffc107; }
+    .battery-critical { color: #dc3545; }
+</style>
+
+@code {
+    private List<Dispositivo>? dispositivos;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            await SupabaseService.InitializeAsync();
+            dispositivos = await SupabaseService.GetDispositivosAsync();
+            Console.WriteLine($"Loaded {dispositivos.Count} devices");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error loading devices: {ex}");
+            throw;
+        }
+    }
+
+    private string GetEstadoClass(string estado) => estado.ToLower() switch
+    {
+        "activo" => "bg-success",
+        "inactivo" => "bg-secondary",
+        "mantenimiento" => "bg-warning",
+        "error" => "bg-danger",
+        _ => "bg-secondary"
+    };
+
+    private string GetBatteriaClass(decimal voltaje) => voltaje switch
+    {
+        > 3.7m => "battery-good",
+        > 3.3m => "battery-warning",
+        _ => "battery-critical"
+    };
+}

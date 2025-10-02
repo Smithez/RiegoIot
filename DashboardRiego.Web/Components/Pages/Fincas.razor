@@ -1,0 +1,54 @@
+@page "/fincas"
+@using DashboardRiego.Web.Models
+@using DashboardRiego.Web.Services
+@using Microsoft.AspNetCore.Components.Web
+@inject SupabaseService SupabaseService
+
+<PageTitle>Fincas - Sistema de Riego IoT</PageTitle>
+
+<h1>Fincas Registradas</h1>
+
+@if (fincas == null)
+{
+    <p>Cargando...</p>
+}
+else if (!fincas.Any())
+{
+    <p>No hay fincas registradas.</p>
+}
+else
+{
+    <div class="table-responsive">
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Nombre</th>
+                    <th>Propietario</th>
+                    <th>Municipio</th>
+                    <th>Área (ha)</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var finca in fincas)
+                {
+                    <tr>
+                        <td>@finca.Nombre</td>
+                        <td>@finca.Propietario</td>
+                        <td>@finca.UbicacionMunicipio</td>
+                        <td>@finca.AreaTotalHectareas</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}
+
+@code {
+    private List<Finca>? fincas;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await SupabaseService.InitializeAsync();
+        fincas = await SupabaseService.GetFincasAsync();
+    }
+}

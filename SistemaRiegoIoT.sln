@@ -1,0 +1,30 @@
+﻿Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.5.2.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AppRiegoIoT.Mobile", "AppRiegoIoT.Mobile\AppRiegoIoT.Mobile.csproj", "{7CEC86B4-C69A-DC12-E5B0-10388F9324C9}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DashboardRiego.Web", "DashboardRiego.Web\DashboardRiego.Web.csproj", "{FF22C9E3-48B8-4E0E-903E-87447B742967}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{7CEC86B4-C69A-DC12-E5B0-10388F9324C9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7CEC86B4-C69A-DC12-E5B0-10388F9324C9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7CEC86B4-C69A-DC12-E5B0-10388F9324C9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7CEC86B4-C69A-DC12-E5B0-10388F9324C9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FF22C9E3-48B8-4E0E-903E-87447B742967}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FF22C9E3-48B8-4E0E-903E-87447B742967}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FF22C9E3-48B8-4E0E-903E-87447B742967}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FF22C9E3-48B8-4E0E-903E-87447B742967}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {6DDCCECF-2303-4A77-ABB2-B613B564A74D}
+	EndGlobalSection
+EndGlobal

@@ -1,0 +1,106 @@
+@page "/monitoreo"
+@using DashboardRiego.Web.Models
+@using DashboardRiego.Web.Services
+@inject SupabaseService SupabaseService
+
+<PageTitle>Monitoreo - Sistema de Riego IoT</PageTitle>
+
+<h1>Monitoreo en Tiempo Real</h1>
+
+@if (lecturas == null)
+{
+    <p>Cargando datos...</p>
+}
+else if (!lecturas.Any())
+{
+    <p>No hay lecturas disponibles.</p>
+}
+else
+{
+    <div class="row">
+        @foreach (var lectura in lecturas.GroupBy(l => l.DispositivoId))
+        {
+            var ultimasLecturas = lectura.OrderByDescending(l => l.Timestamp).Take(1);
+            foreach (var ultima in ultimasLecturas)
+            {
+                <div class="col-md-4 mb-4">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="card-title mb-0">@(ultima.Dispositivo?.Nombre ?? $"Dispositivo {ultima.DispositivoId}")</h5>
+                        </div>
+                        <div class="card-body">
+                            <h6>@ultima.TipoLecturaDisplay</h6>
+                            <div class="display-4 mb-3">@ultima.ValorFormateado</div>
+                            <div class="text-muted small">
+                                @if (ultima.EsLecturaReciente)
+                                {
+                                    <span class="text-success">● En línea</span>
+                                }
+                                else
+                                {
+                                    <span class="text-danger">○ Última actualización: @ultima.Timestamp.ToString("g")</span>
+                                }
+                            </div>
+                            @if (ultima.RequiereAtencion)
+                            {
+                                <div class="alert alert-warning mt-2" role="alert">
+                                    <i class="bi bi-exclamation-triangle"></i> Valor fuera del rango normal
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+            }
+        }
+    </div>
+}
+
+@code {
+    private List<LecturaSensor>? lecturas;
+    private System.Timers.Timer? timer;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            await CargarLecturas();
+            IniciarActualizacionAutomatica();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error al inicializar monitoreo: {ex}");
+        }
+    }
+
+    private async Task CargarLecturas()
+    {
+        try
+        {
+            var query = await SupabaseService.GetLecturasAsync();
+            lecturas = query.OrderByDescending(l => l.Timestamp).ToList();
+            StateHasChanged();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error al cargar lecturas: {ex}");
+        }
+    }
+
+    private void IniciarActualizacionAutomatica()
+    {
+        timer = new System.Timers.Timer(30000); // Actualizar cada 30 segundos
+        timer.Elapsed += async (sender, e) =>
+        {
+            await InvokeAsync(async () =>
+            {
+                await CargarLecturas();
+            });
+        };
+        timer.Start();
+    }
+
+    public void Dispose()
+    {
+        timer?.Dispose();
+    }
+}
