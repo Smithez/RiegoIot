@@ -1,0 +1,56 @@
+# Ignore build outputs
+**/bin/
+**/obj/
+**/obj/**
+**/bin/**
+
+# VS/IDE files
+.vs/
+.vscode/
+*.user
+*.suo
+*.userosscache
+*.sln.ide
+.idea/
+
+# Rider
+.idea/
+*.iml
+
+# Dotnet publish output
+publish/
+**/publish/
+
+# Logs and databases
+*.log
+*.sqlite
+*.db
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Node modules if any
+node_modules/
+
+# Runtime secrets and local development settings
+appsettings.Development.json
+secrets.json
+
+# NuGet
+*.nupkg
+.nuget/
+
+# Mobile (MAUI) build outputs - exclude to keep context small
+AppRiegoIoT.Mobile/bin/
+AppRiegoIoT.Mobile/obj/
+
+# Docker files
+Dockerfile.*
+
+# Misc
+*.zip
+*.tar.gz
+
+# Ignore the published artifacts from previous local runs
+**/publish
